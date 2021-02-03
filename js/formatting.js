@@ -6,12 +6,14 @@ module.exports = (result, req) => {
     }
 
     if (req.query.current || req.query.size) {
-        List.current = Number(req.query.current) || 1
-        List.size = Number(req.query.size) || 20
-    }
-    if (req.params.current || req.params.size) {
-        List.current = Number(req.query.current) || 1
-        List.size = Number(req.params.size) || 20
+        List.current = Number(req.query.current)
+        List.size = Number(req.query.size)
+    } else if (req.params.current || req.params.size) {
+        List.current = Number(req.query.current)
+        List.size = Number(req.params.size)
+    } else {
+        List.current = 1
+        List.size = 20
     }
 
     return List
