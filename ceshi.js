@@ -78,7 +78,7 @@ app.all("/getUser", (req, res) => {
         } else {
             var data = {
                 status: 200,
-                ...formatting(result),
+                data:formatting(result,req),
                 messgae: "请求成功"
             }
             res.send(data)
