@@ -3,6 +3,9 @@ const app = express();
 const mysql = require("mysql");
 const formatting = require("./js/formatting.js")
 const Error = require("./js/Error.js")
+const formidable = require("formidable");
+const path = require('path')
+const fs = require("fs");
 
 // 创建连接
 const db = mysql.createConnection({
@@ -132,6 +135,39 @@ app.get("/deleteUser/:id", (req, res) => {
         }
     })
 })
+
+//上传图片
+app.post('/upload/:id', function (req, res) { 
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (error, fields, files) {
+        fs.writeFileSync(`cover/${req.params.id}.${files.upload.name.split('.')[files.upload.name.split('.').length - 1]}`, fs.readFileSync(files.upload.path));
+        let sql = `UPDATE User SET cover = 'cover/${req.params.id}.${files.upload.name.split('.')[files.upload.name.split('.').length - 1]}' WHERE id = ${req.params.id}`;
+        db.query(sql, (err, result) => {
+            if (err) {
+                res.send(Error(err))
+            } else {
+                var data = {
+                    status: 200,
+                    data: req.params.id,
+                    messgae: "请求成功"
+                }
+                res.send(data)
+            }
+        })
+    });
+});
+
+// // 服务器代理
+// app.use('/api', proxy({
+// 	target: "http://www.baidu.com",
+// 	changeOrigin: true,
+// 	pathRewrite: {
+// 		"^/api": "/"
+// 	}
+// }))
+
+// 图片服务代理
+app.use('/cover', express.static(path.join(__dirname, './cover')))
 
 app.listen(3000, () => {
     console.log("服务器端口3000....");
