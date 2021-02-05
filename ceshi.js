@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql");
 const formatting = require("./js/formatting.js")
-const Error = require("./js/Error.js") 
+const Error = require("./js/Error.js")
 
 // 创建连接
 const db = mysql.createConnection({
@@ -47,14 +47,17 @@ app.get("/createUserTable", (req, res) => {
 
 // 插入数据
 app.get("/addUser", (req, res) => {
-    let Phone = Math.ceil(Math.random() * 100000)
-    let post = { title: "1111111", name: "我的名字", phone: '151311' + Phone };
-    db.query('INSERT INTO User SET ?;SELECT LAST_INSERT_ID() as Id;', post, (err, result) => {
+    let post = { title: req.query.title ? req.query.title : '', name: req.query.name ? req.query.name : "", phone: req.query.phone ? req.query.phone : '' };
+    db.query('INSERT INTO User SET ?;', post, (err, result) => {
         if (err) {
             res.send(Error(err))
         } else {
-            console.log(result);
-            res.send(result)
+            var data = {
+                status: 200,
+                data: { id: result.insertId },
+                messgae: "请求成功"
+            }
+            res.send(data)
         }
     })
 })
@@ -78,7 +81,7 @@ app.all("/getUser", (req, res) => {
         } else {
             var data = {
                 status: 200,
-                data:formatting(result,req),
+                data: formatting(result, req),
                 messgae: "请求成功"
             }
             res.send(data)
@@ -86,15 +89,19 @@ app.all("/getUser", (req, res) => {
     })
 })
 
-// 查询单条内容
+// 查询单条内容  -- 详情
 app.get("/getUser/:id", (req, res) => {
     let sql = `SELECT * FROM User WHERE id = ${req.params.id}`;
     db.query(sql, (err, result) => {
         if (err) {
             res.send(Error(err))
         } else {
-            console.log(result);
-            res.json(result)
+            var data = {
+                status: 200,
+                data: result[0],
+                messgae: "请求成功"
+            }
+            res.send(data)
         }
     })
 })
