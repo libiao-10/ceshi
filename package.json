@@ -12,6 +12,8 @@
     "express": "^4.17.1",
     "formidable": "^1.2.2",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "connect-multiparty": "^2.2.0",
+    "jsonwebtoken": "^8.5.1"
   }
 }
