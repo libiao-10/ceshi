@@ -22,7 +22,7 @@ const db = mysql.createConnection({
   database: "test",
   multipleStatements: true,
 });
-
+// 
 //连接数据库
 db.connect((err) => {
   if (err) throw err;
