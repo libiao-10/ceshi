@@ -357,7 +357,7 @@ app.all("/statistics/getList", (req, res) => {
     } else {
       var List=[]
       for(var i in result){
-        List.push(result[i][req.query.name]) 
+        List.push(result[i][req.query.key]) 
       }
       var DataList=[]
       List.map((item)=>{
