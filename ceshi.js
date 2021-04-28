@@ -22,7 +22,7 @@ const db = mysql.createConnection({
   database: "test",
   multipleStatements: true,
 });
-// 
+//
 //连接数据库
 db.connect((err) => {
   if (err) throw err;
@@ -105,7 +105,7 @@ app.all("/getList", (req, res) => {
   for (var item in req.query) {
     if (item !== "currentPage" && item !== "perPageRows") {
       if (req.query[item] !== "-1") {
-        wheretext += ` AND ${item} = ` + "'" + req.query[item]+ "'";
+        wheretext += ` AND ${item} = ` + "'" + req.query[item] + "'";
       }
     }
   }
@@ -181,8 +181,8 @@ app.get("/deleteUser/:id", (req, res) => {
 
 // 人才管理发送邮件服务
 app.get("/SendMessage", (req, res) => {
-  SendMessage(req, res).then((result) => { 
-    let sql = `UPDATE personnel SET isSend = 1 , interview = "${req.query.time}" WHERE id = ${ req.query.id }`;
+  SendMessage(req, res).then((result) => {
+    let sql = `UPDATE personnel SET isSend = 1 , interview = "${req.query.time}" WHERE id = ${req.query.id}`;
     db.query(sql, (err, result) => {
       if (err) {
         res.send(Error(err));
@@ -232,13 +232,13 @@ app.all("/getMajor", (req, res) => {
     if (err) {
       res.send(Error(err));
     } else {
-      var List=[]
-      for(var i in result){
-        List.push(result[i]) 
+      var List = [];
+      for (var i in result) {
+        List.push(result[i]);
       }
       var data = {
         status: 200,
-        data:List,
+        data: List,
         messgae: "请求成功",
       };
       res.send(data);
@@ -246,14 +246,13 @@ app.all("/getMajor", (req, res) => {
   });
 });
 
-
 // 职位管理查询接口
 app.all("/position/getlist", (req, res) => {
   let wheretext = "";
   for (var item in req.query) {
     if (item !== "currentPage" && item !== "perPageRows") {
       if (req.query[item] !== "-1") {
-        wheretext += ` AND ${item} = ` + "'" + req.query[item]+ "'";
+        wheretext += ` AND ${item} = ` + "'" + req.query[item] + "'";
       }
     }
   }
@@ -326,21 +325,20 @@ app.get("/position/deleteUser/:id", (req, res) => {
   });
 });
 
-
 // 职位管理查询接口
 app.all("/position/getlistAll", (req, res) => {
-  let sql = `SELECT * FROM position `
+  let sql = `SELECT * FROM position `;
   db.query(sql, (err, result) => {
     if (err) {
       res.send(Error(err));
     } else {
-      var List=[]
-      for(var i in result){
-        List.push(result[i]) 
+      var List = [];
+      for (var i in result) {
+        List.push(result[i]);
       }
       var data = {
         status: 200,
-        data:List,
+        data: List,
         messgae: "请求成功",
       };
       res.send(data);
@@ -349,35 +347,39 @@ app.all("/position/getlistAll", (req, res) => {
 });
 
 // 统计管理查询接口
-app.all("/statistics/getList", (req, res) => { 
-  let sql = `SELECT * FROM personnel`
+app.all("/statistics/getList", (req, res) => {
+  let sql = `SELECT * FROM personnel`;
   db.query(sql, (err, result) => {
     if (err) {
       res.send(Error(err));
     } else {
-      var List=[]
-      for(var i in result){
-        List.push(result[i][req.query.key]) 
+      var List = [];
+      for (var i in result) {
+        List.push(result[i][req.query.key]);
       }
-      var DataList=[]
-      List.map((item)=>{
-        if(DataList.filter((item1)=>{return item1.type==item}).length>0){
-          DataList.map((item2)=>{
-            if(item2.type==item){
-              item2.const++
+      var DataList = [];
+      List.map((item) => {
+        if (
+          DataList.filter((item1) => {
+            return item1.type == item;
+          }).length > 0
+        ) {
+          DataList.map((item2) => {
+            if (item2.type == item) {
+              item2.const++;
             }
-          })
-        }else{
-          var Box={
-            type:item,
-            const:1
-          }
-          DataList.push(Box)
+          });
+        } else {
+          var Box = {
+            type: item,
+            const: 1,
+          };
+          DataList.push(Box);
         }
-      })
+      });
       var data = {
         status: 200,
-        data:DataList,
+        data: DataList,
         messgae: "请求成功",
       };
       res.send(data);
@@ -385,6 +387,87 @@ app.all("/statistics/getList", (req, res) => {
   });
 });
 
+//菜单管理 menu
+// 菜单管理下拉选择
+//
+app.all("/menu/Select/list", (req, res) => {
+  let sql = `SELECT * FROM menu`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      res.send(Error(err));
+    } else {
+      var List = [];
+      for (var i in result) {
+        if (result[i].pid == 0) {
+          List.push({ name: result[i].name, id: result[i].id });
+        }
+      }
+      var data = {
+        status: 200,
+        data: List,
+        messgae: "请求成功",
+      };
+      res.send(data);
+    }
+  });
+});
+// 菜单管理查询接口
+app.all("/menu/getlist", (req, res) => {
+  let sql = `SELECT * FROM menu`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      res.send(Error(err));
+    } else {
+      var List = [];
+      for (var i in result) {
+        List.push(result[i]);
+      }
+      var MenuList = [];
+      List.map((item) => {
+        if (item.pid == 0) {
+          MenuList.push({
+            key: item.id,
+            title: item.name,
+            url: item.url,
+            children: [],
+          });
+        } else {
+          MenuList.map((item1, index) => {
+            if (item.pid == item1.key) {
+              MenuList[index].children.push({
+                key: item.id,
+                title: item.name,
+                url: item.url,
+              });
+            }
+          });
+        }
+      }); 
+      var data = {
+        status: 200,
+        data: MenuList,
+        messgae: "请求成功",
+      };
+      res.send(data);
+    }
+  });
+});
+
+// 菜单管理新增接口
+app.get("/menu/addUser", (req, res) => {
+  db.query("INSERT INTO menu SET ?;", req.query, (err, result) => {
+    if (err) {
+      res.send(Error(err));
+    } else {
+      var data = {
+        status: 200,
+        data: { id: result.insertId },
+        messgae: "请求成功",
+      };
+      res.send(data);
+    }
+  });
+});
 
 // // 服务器代理
 // app.use('/api', proxy({
