@@ -411,6 +411,7 @@ app.all("/menu/Select/list", (req, res) => {
     }
   });
 });
+
 // 菜单管理查询接口
 app.all("/menu/getlist", (req, res) => {
   let sql = `SELECT * FROM menu`;
@@ -429,6 +430,7 @@ app.all("/menu/getlist", (req, res) => {
             key: item.id,
             title: item.name,
             url: item.url,
+            pid: item.pid,
             children: [],
           });
         } else {
@@ -438,11 +440,12 @@ app.all("/menu/getlist", (req, res) => {
                 key: item.id,
                 title: item.name,
                 url: item.url,
+                pid: item.pid,
               });
             }
           });
         }
-      }); 
+      });
       var data = {
         status: 200,
         data: MenuList,
@@ -468,6 +471,41 @@ app.get("/menu/addUser", (req, res) => {
     }
   });
 });
+
+// 菜单管理更新接口
+app.get("/menu/update/:id", (req, res) => {
+  let sql = `UPDATE menu SET ${encode(req.query)} WHERE id = ${
+    req.params.id
+  }`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      res.send(Error(err));
+    } else {
+      var data = {
+        status: 200,
+        messgae: "请求成功",
+      };
+      res.send(data);
+    }
+  });
+});
+
+// 菜单管理删除接口
+app.get("/menu/delete/:id", (req, res) => {
+  let sql = `DELETE FROM menu WHERE id = ${req.params.id}`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      res.send(Error(err));
+    } else {
+      var data = {
+        status: 200,
+        messgae: "请求成功",
+      };
+      res.send(data);
+    }
+  });
+});
+
 
 // // 服务器代理
 // app.use('/api', proxy({
